@@ -5,6 +5,10 @@
 
 /* global $, swal, fabric, io, ga */
 
+function ga() {
+	console.log("stub");
+}
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-sweetalert/dist/sweetalert.css";
 import "typeface-pangolin";
@@ -182,7 +186,8 @@ function Screen() {
 	this.isLoading = true;
 
 	this.defaultTitle = "Drawphone";
-	this.defaultSubtitle = "Telephone with pictures";
+	this.defaultSubtitle =
+		"Telephone with pictures for 野萌君 Weekend Support Group";
 }
 
 Screen.prototype.initialize = function() {};
@@ -370,7 +375,7 @@ function Lobby() {
 	this.gameCode = "";
 
 	//this is what the host selects from the dropdowns
-	this.selectedTimeLimit = false;
+	this.selectedTimeLimit = 0;
 	this.wordPack = false;
 	this.showNeighbors = false;
 
@@ -484,11 +489,11 @@ Lobby.prototype.initialize = function() {
 		ga("send", "event", "Lobby", "view previous results");
 	});
 
-	this.wordFirstCheckbox.prop("checked", false);
+	this.wordFirstCheckbox.prop("checked", true);
 	this.showNeighborsCheckbox.prop("checked", false);
-	this.timeLimitDropdown.prop("selectedIndex", 0);
+	this.timeLimitDropdown.prop("selectedIndex", 1);
 	this.wordPackDropdown.prop("selectedIndex", 0);
-	this.wordPackDropdown.prop("disabled", false);
+	this.wordPackDropdown.prop("disabled", true);
 
 	this.addBotButton.click(() => {
 		swal(
@@ -519,7 +524,7 @@ Lobby.prototype.show = function(data) {
 	if (data) {
 		if (data.success) {
 			Screen.gameCode = data.game.code;
-			this.selectedTimeLimit = false;
+			this.selectedTimeLimit = 0;
 			this.update({
 				success: true,
 				gameCode: data.game.code,
@@ -550,11 +555,11 @@ Lobby.prototype.show = function(data) {
 		}
 	} else {
 		//reset the word first wordFirstCheckbox
-		this.wordFirstCheckbox.prop("checked", false);
+		this.wordFirstCheckbox.prop("checked", true);
 
 		//reset the time limit selector
-		this.selectedTimeLimit = false;
-		this.timeLimitDropdown.prop("selectedIndex", 0);
+		this.selectedTimeLimit = 0;
+		this.timeLimitDropdown.prop("selectedIndex", 1);
 
 		//reset the word pack selector
 		this.wordPack = false;
@@ -589,7 +594,7 @@ Lobby.prototype.update = function(res) {
 			this.startButton.removeClass(HIDDEN);
 			//show the game Settings
 			this.gameSettings.removeClass(HIDDEN);
-			this.gameSettingsBots.removeClass(HIDDEN);
+			//this.gameSettingsBots.removeClass(HIDDEN);
 			for (let setting of this.gameSettings.find(".lobby-setting")) {
 				$(setting).prop("disabled", false);
 			}
@@ -809,6 +814,8 @@ Game.prototype.showButtons = function(showClearButton) {
 		showElement("#game-drawing-undo");
 		$("#game-drawing-redo").addClass("disabled");
 		$("#game-drawing-undo").addClass("disabled");
+
+		showElement("#game-draw-buttons");
 	} else {
 		$("#game-drawing-redo").addClass(HIDDEN);
 		$("#game-drawing-undo").addClass(HIDDEN);
@@ -820,6 +827,7 @@ Game.prototype.hideBoth = function() {
 	$("#game-drawing").addClass(HIDDEN);
 	$("#game-word").addClass(HIDDEN);
 	$("#game-buttons").addClass(HIDDEN);
+	$("#game-draw-buttons").addClass(HIDDEN);
 };
 
 Game.prototype.newLink = function(res) {
@@ -861,7 +869,10 @@ Game.prototype.newLink = function(res) {
 		this.resizeCanvas();
 	} else if (lastLinkType === FIRST_WORD) {
 		$("#game-word-drawingtoname").removeAttr("src");
-		Screen.prototype.setTitle.call(this, "What should be drawn?");
+		Screen.prototype.setTitle.call(
+			this,
+			"Start the chain with the first sentence"
+		);
 
 		//show the word creator
 		this.showWord();
@@ -905,6 +916,7 @@ Game.prototype.checkIfDone = function(newLinkType) {
 		if (this.canvas.isBlank) {
 			showElement("#game-drawing");
 			showElement("#game-buttons");
+			showElement("#game-draw-buttons");
 			swal(
 				"Your picture is blank!",
 				"Please draw a picture, then try again.",
@@ -1310,7 +1322,7 @@ function getDrawingCanvas() {
 	var thisCanvas = new fabric.Canvas("game-drawing-canvas");
 	thisCanvas.isDrawingMode = true;
 	thisCanvas.isBlank = true;
-	thisCanvas.freeDrawingBrush.width = 4;
+	thisCanvas.freeDrawingBrush.width = 5;
 
 	var state = {
 		canvasState: [],
@@ -1320,8 +1332,16 @@ function getDrawingCanvas() {
 		undoFinishedStatus: 1,
 		redoFinishedStatus: 1,
 		undoButton: $("#game-drawing-undo"),
-		redoButton: $("#game-drawing-redo")
+		redoButton: $("#game-drawing-redo"),
+		// hplin 8/16
+		colorInput: $("#game-drawing-color"),
+		brushsizeInput: $("#game-drawing-brushsize"),
+		colorOut: $("#game-drawing-color-text"),
+		brushsizeOut: $("#game-drawing-brushsize-text"),
+		brushsize: 5,
+		color: "#000000"
 	};
+
 	thisCanvas.on("path:created", function() {
 		updateCanvasState();
 	});
@@ -1430,8 +1450,40 @@ function getDrawingCanvas() {
 		}
 	};
 
+	var changeColor = function() {
+		console.log(state);
+		console.log(state.colorInput);
+		console.log(thisCanvas);
+		console.log(document.getElementById("game-drawing-color").value);
+		document.getElementById(
+			"game-drawing-color-text"
+		).innerHTML = document.getElementById("game-drawing-color").value;
+		thisCanvas.freeDrawingBrush.color = document.getElementById(
+			"game-drawing-color"
+		).value;
+	};
+
+	var changeBrushsize = function() {
+		console.log(state);
+		console.log(state.brushsizeInput);
+		console.log(thisCanvas);
+		console.log(document.getElementById("game-drawing-brushsize").value);
+		document.getElementById(
+			"game-drawing-brushsize-text"
+		).innerHTML = document.getElementById("game-drawing-brushsize").value;
+		thisCanvas.freeDrawingBrush.width =
+			parseInt(
+				document.getElementById("game-drawing-brushsize").value,
+				10
+			) || 1;
+	};
+
 	state.undoButton.on("click", undo);
 	state.redoButton.on("click", redo);
+
+	// hplin 8/16/20
+	state.colorInput.on("change", changeColor);
+	state.brushsizeInput.on("change", changeBrushsize);
 
 	thisCanvas.remove = function() {
 		state.undoButton.off("click");

@@ -15,21 +15,10 @@ block content
   div#mainmenu.d-none
     .btn-toolbar
       button#joinbtn.btn.btn-default.btn-lg.mr-2(type='button') Join Game
-      button#newbtn.btn.btn-default.btn-lg(type='button') New Game
+      button#newbtn.btn.btn-primary.btn-lg(type='button') New Game
     br
     .btn-toolbar
-      button#archivebtn.btn.btn-default.mt-2(type='button') View Previous Results
-    br
-    br
-    .btn-group-vertical(role="group" aria-label="...")
-      button#howbtn.btn.btn-default(type='button') How to Play
-      button#ssbtn.btn.btn-default(type='button') Screenshots
-      button#mgbtn.btn.btn-default(type='button') Games Like Drawphone
-      a.btn.btn-default(type='button', role='button', href='https://docs.google.com/forms/d/e/1FAIpQLSe0lIL4ZYxyKDNHqv25VkLqOg7tk2VhOcOA-yDAuYxKFx6kyw/viewform', target='_blank') Submit Feedback
-      a.btn.btn-default(type='button', role='button', href='https://www.reddit.com/r/boardgames/comments/7lhj20/a_year_ago_i_was_wondering_why_there_were_no/', target='_blank') Original Reddit Post
-    br
-    br
-    include buymebutton.pug
+      button#archivebtn.btn.btn-info.mt-2(type='button') View Previous Results
   div.row.justify-content-center
     div.col
       div#joinmenu.d-none
@@ -51,7 +40,7 @@ block content
           .input-container
             label Name:
             .form-group
-              input#newinname.form-control(type='text', placeholder='Use your real name!', maxlength=16)
+              input#newinname.form-control(type='text', placeholder='Use any name', maxlength=16)
           .btn-toolbar 
             button#newmenu-back.btn.btn-default.btn-lg.mr-2(type='button') Back
             button#newmenu-go.btn.btn-default.btn-lg(type='submit') Start
@@ -68,20 +57,20 @@ block content
         h5 Game Settings:
         .checkboxes.mb-3
           .custom-control.custom-switch
-            input#lobby-settings-wordfirst.custom-control-input.lobby-setting(type='checkbox')
-            label.custom-control-label(for='lobby-settings-wordfirst') Players write first word (not recommended for first time)
+            input#lobby-settings-wordfirst.custom-control-input.lobby-setting(type='checkbox',checked='')
+            label.custom-control-label(for='lobby-settings-wordfirst') Free writing mode
           .custom-control.custom-switch
             input#lobby-settings-showNeighbors.custom-control-input.lobby-setting(type='checkbox')
             label.custom-control-label(for='lobby-settings-showNeighbors') Show identity of players you are passing to and from
         label Word pack:
-        select.form-control.lobby-setting#lobby-settings-wordpack.mb-2
+        select.form-control.lobby-setting#lobby-settings-wordpack.mb-2(disabled='')
           option(disabled='', selected='') Select a word pack...
           for item in wordpacks
             option #{item}
         label Time limit:
         select.form-control.lobby-setting#lobby-settings-timelimit
-          option(disabled='', selected='') Select a drawing time limit...
-          option No time limit (recommended)
+          option(disabled='') Select a drawing time limit...
+          option(selected='') No time limit (recommended)
           option 5 seconds
           option 10 seconds
           option 15 seconds
@@ -93,19 +82,8 @@ block content
           button#lobby-settings-removebot.btn.btn-default.mt-2(type='button') Remove Bot Player
     br
     .btn-toolbar
-      button#lobby-leave.btn.btn-default.btn-lg.mr-2(type='button') Leave Game
-      button#lobby-start.btn.btn-default.btn-lg.disabled.d-none(type='button') Start Game
-    br
-    br
-    div.card.thanks-panel
-      div.card-body
-        div Thanks for playing Drawphone!
-        p If you had fun, try out my other game:
-        a.btn.btn-default(type='button', role='button', href='https://spyfall.tannerkrewson.com/', style='font-size:1.1em;') Play Spyfall
-        br
-        br
-        div or, if you're feeling hungry:
-        include buymebutton.pug
+      button#lobby-leave.btn.btn-danger.btn-lg.mr-2(type='button') Leave Game
+      button#lobby-start.btn.btn-primary.btn-lg.d-none(type='button') Start Game
 
 
   div#game.d-none
@@ -130,10 +108,26 @@ block content
       br
       input#game-word-in.form-control(type='text', placeholder='Enter your title here')
     br
+    div.row.mb-3#game-draw-buttons.d-none
+      div.col-md-6
+        div.input-group
+          div.input-group-prepend
+            span.input-group-text Color
+          input#game-drawing-color.form-control(type='color', value='#000000')
+          div.input-group-append
+            span.input-group-text#game-drawing-color-text #000000
+      div.col-md-6
+        div.input-group
+          div.input-group-prepend
+            span.input-group-text Size
+          input#game-drawing-brushsize.form-control(type='range', value='5', min='1', max='60')
+          div.input-group-append
+            span.input-group-text#game-drawing-brushsize-text 5
+    br
     .btn-toolbar#game-buttons.d-none
       button#game-drawing-undo.btn.btn-default.btn-lg.disabled.mr-2(type='button') Undo
       button#game-drawing-redo.btn.btn-default.btn-lg.disabled.mr-2(type='button') Redo
-      button#game-send.btn.btn-default.btn-lg(type='button') Done
+      button#game-send.btn.btn-primary.btn-lg(type='button') Done
   div#result.d-none
     div#result-content
     br
