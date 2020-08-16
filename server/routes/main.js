@@ -16,6 +16,17 @@ module.exports = function(app) {
 		});
 	});
 
+	app.get("//", function(req, res) {
+		const isSafeForWorkURL = req.headers.host.startsWith("dpk");
+		const wordpacks = isSafeForWorkURL ? safePackNames : allPackNames;
+
+		res.render("index", {
+			wordpacks,
+			js: webpackAssets.main.js,
+			css: webpackAssets.main.css
+		});
+	});
+
 	app.get("/how-to-play", function(req, res) {
 		res.render("howtoplay", {
 			js: webpackAssets.main.js,
