@@ -66,7 +66,7 @@ Round.prototype.start = function() {
 	//contrary to the above comment, i now want every chain to end in a word
 	// so that the Start to End results box always starts and ends works correctly.
 	//to do this, i take away on link if there is an even number of final links
-	if (this.finalNumOfLinks % 2 === 0) {
+	if (this.finalNumOfLinks % 2 === 0 && false) {
 		this.finalNumOfLinks--;
 	}
 
